@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Rxjs 6</title>
+    <script src="/dist/bundle.js"></script>
+    <style>
+        body {
+            height: 100vh;
+            background-color: rgba(0, 0 , 0, .5);
+            margin: 0;
+        }
+
+        h3 {
+            color: #eee;
+            background-color: #666;
+            margin: 0;
+            padding: 0 1rem;
+        }
+
+        section {
+            margin-bottom: 20px;
+        }
+        
+        #example2 {
+            position: relative;
+            width: 100%;
+            background-color: aquamarine;
+            height: 300px;
+        }
+
+        #example2 .drag {
+            position: absolute;
+            top: 2rem;
+            left: 0;
+            background-color: azure;
+            width: 98px;
+            height: 98px;
+            border: 1px solid gray;
+        }
+
+        #example4 {
+            height: 500px;
+            overflow: scroll;
+        }
+
+        #example4 div {
+            height: 800px;
+            background-color: rgba(9, 84, 196, 0.692);
+        }
+
+        #example4 .img {
+            margin: 0 auto;
+            width: 100%;
+            height: auto;
+            cursor: all-scroll;
+        }
+
+        #example4 .img img{
+            pointer-events: none;
+            user-select: none;
+        }
+
+        #example4 .anchor {
+            height: 0;
+            width: 100%;
+        }
+
+        #example4 .pos-fixed
+        {
+            position: absolute;
+            width: 200px;
+            height: 140px;
+            /* right: 0; */
+        }
+
+         #example4 .pos-fixed img
+        {
+            width: 200px;
+            height: 140px;
+        }
+
+    </style>
+</head>
+<body>
+    <section id="example1">
+        <h3>fromEvent, interval, take, map, concallAll</h3>
+        <button>Click</button>
+    </section>
+
+    <section id="example2">
+        <h3>concatAll, takeUntil</h3>
+        <div class="drag"></div>
+    </section>
+
+    <section id="example3">
+        <h3>concat, merge</h3>
+        <div>
+            <button>concat</button>
+            <button>merge</button>
+        </div>
+    </section>
+
+    <section id="example4">
+        <h3>youku: filter, withLatestFrom</h3>
+        <div>
+            <span class="anchor"></span>
+            <div class="img">
+                 <img src="/assets/Funny-Cat-Jokes2.jpg" alt="">
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>
