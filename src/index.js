@@ -1,6 +1,6 @@
 import { fromEvent, interval } from 'rxjs';
 import {
-    take, map, concatAll, takeUntil, concat, startWith, merge, filter, withLatestFrom
+    take, map, concatAll, takeUntil, concat, startWith, merge, filter, withLatestFrom, delay
  } from 'rxjs/operators';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ex4Img.classList.remove('pos-fixed');
             }
         });
-        console.log(ex4Div.offsetTop + ex4Div.offsetHeight);
+
     ex4MouseDown$.pipe(
         filter(e => e.currentTarget.classList.contains('pos-fixed')),
         map(e => ex4MouseMove$
@@ -127,4 +127,23 @@ document.addEventListener('DOMContentLoaded', () => {
             ex4Img.style.top = `${pos.y}px`;
             ex4Img.style.left = `${pos.x}px`;
         })
+
+    // example 5
+    const ex5Div = document.querySelector('#example5');
+    const ex5Imgs = document.querySelectorAll('#example5 img');
+
+    const ex5MouseMove$ = fromEvent(ex5Div, 'mousemove');
+
+    ex5Imgs.forEach((item, i) => {
+        ex5MouseMove$.pipe(
+            map(e => ({ x: e.clientX, y: e.clientY })),
+            delay(300 * (Math.pow(0.65, i) + Math.cos(i / 4)) / 2)
+        )
+            .subscribe((pos) => {
+                console.log(pos);
+                item.style.top = pos.y + 75 + 'px';
+                item.style.left = pos.x - 25 + 'px';
+            });
+    });
+
 });
