@@ -1,5 +1,26 @@
 {
   "dependencies": {
     "rxjs": "^6.2.2"
-  }
+  },
+  "name": "rxjs-combo",
+  "version": "1.0.0",
+  "description": "collection of rxjs examples",
+  "main": "/src/index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paulhuang1102/rxjs-combo.git"
+  },
+  "keywords": [
+    "rxjs"
+  ],
+  "author": "Paul Huang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/paulhuang1102/rxjs-combo/issues"
+  },
+  "homepage": "https://github.com/paulhuang1102/rxjs-combo#readme"
 }
