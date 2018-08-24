@@ -1,6 +1,23 @@
-import { fromEvent, interval } from 'rxjs';
+import { fromEvent, interval, from, iif, of } from 'rxjs';
 import {
-    take, map, concatAll, takeUntil, concat, startWith, merge, filter, withLatestFrom, delay
+    take,
+    map,
+    concatAll,
+    takeUntil,
+    concat,
+    startWith,
+    merge,
+    filter,
+    withLatestFrom,
+    delay,
+    zip,
+    retry,
+    catchError,
+    retryWhen,
+    debounceTime,
+    switchMap,
+    concatMap,
+    toArray,
  } from 'rxjs/operators';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -115,7 +132,6 @@ document.addEventListener('DOMContentLoaded', () => {
         concatAll(),
         // ex4MouseMove$, ex4MouseDown$ final vlaue will be parameter
         withLatestFrom(ex4MouseDown$, (move, down) => {
-            console.log(move.clientX, move.clientY, down);
             return {
                 x: validValue(move.clientX - down.offsetX, ex4Div.offsetWidth - 200, 0),
                 y: validValue(move.clientY - down.offsetY, ex4Div.offsetTop + ex4Div.offsetHeight - 140, ex4Div.offsetTop)
@@ -123,27 +139,91 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     )
         .subscribe(pos => {
-            console.log(pos);
             ex4Img.style.top = `${pos.y}px`;
             ex4Img.style.left = `${pos.x}px`;
         })
 
-    // example 5
-    const ex5Div = document.querySelector('#example5');
-    const ex5Imgs = document.querySelectorAll('#example5 img');
+    // example 5 
 
-    const ex5MouseMove$ = fromEvent(ex5Div, 'mousemove');
+    const ex5From = from(['a', 'b', 'c', 'd', 666])
+    const ex5Inteval = interval(700);
 
-    ex5Imgs.forEach((item, i) => {
-        ex5MouseMove$.pipe(
-            map(e => ({ x: e.clientX, y: e.clientY })),
+    ex5From.pipe(
+        zip(ex5Inteval, (x, y) => ({x, y})),
+        map(obj => obj.x.toUpperCase()),
+        retry(2),
+        // other operators to handle error
+        // catchError((err, obs) => obs),
+        // retryWhen(errorObs => errorObs.pipe(delay(1000)))
+    )
+        .subscribe({
+            next: (result) => console.log(result),
+            error: (err) => console.log('Error: ', err),
+            complete: () => console.log(complete)
+        });
+
+    // example 6
+
+    const ex6Div = document.querySelector('#example6');
+    const ex6Imgs = document.querySelectorAll('#example6 img');
+
+    const ex6MouseMove$ = fromEvent(ex6Div, 'mousemove');
+
+    ex6Imgs.forEach((item, i) => {
+        ex6MouseMove$.pipe(
+            map(e => ({ x: e.clientX - 25, y: e.clientY - ex6Div.offsetTop + 300 })),
             delay(300 * (Math.pow(0.65, i) + Math.cos(i / 4)) / 2)
         )
             .subscribe((pos) => {
-                console.log(pos);
-                item.style.top = pos.y + 75 + 'px';
-                item.style.left = pos.x - 25 + 'px';
+                item.style.transform = 'translate3d(' + pos.x + 'px, ' + pos.y + 'px, 0)';
             });
     });
 
+    // example 7
+
+    const ex7Input = document.querySelector('#example7 .search');
+    const ex7List = document.querySelector('#example7 ul');
+
+    const apiUrl = 'https://api.coinmarketcap.com/v2/ticker/';
+    const getData = () => fetch(apiUrl).then(res => res.json());
+    const render = (resultArr = []) => ex7List.innerHTML = resultArr.map(item => '<li>'+ item +'</li>').join('')
+
+    const ex7KeyUp$ = fromEvent(ex7Input, 'keyup');
+    const ex7Request$ = from(getData());
+    const ex7Select$ = fromEvent(ex7List, 'click');
+
+    ex7KeyUp$.pipe(
+        debounceTime(500),
+        switchMap(() => ex7Request$, (e, res) => [e.target.value, res.data]),
+        concatMap(
+            ([value, obj]) => (
+                iif(
+                    // statement
+                    () => value.length < 1,
+                    // if true
+                    of('').pipe(
+                        map(() => [])
+                    ),
+                    // if false
+                    from(Object.keys(obj)).pipe(
+                        map(key => obj[key].name),
+                        filter(name => new RegExp(value.toLowerCase()).test(name.toLowerCase())),
+                        toArray(),
+                    )
+                )
+            )
+        )
+    )
+        .subscribe(list => {
+            render(list);
+        });
+
+    ex7Select$.pipe(
+        filter(e => e.target.matches('li')),
+        map(e => e.target.innerText)
+    )
+        .subscribe((val) => {
+            ex7Input.value = val;
+            render();
+        })
 });
